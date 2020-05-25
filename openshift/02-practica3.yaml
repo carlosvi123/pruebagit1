@@ -1,0 +1,38 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  name: practica3
+  namespace: formacion
+  labels:
+    app: practica3
+spec:
+  replicas: 1
+  selector:
+    app: practica3
+  template:
+    metadata:
+      labels:
+        app: practica3
+    spec:
+      volumes:
+        - name: properties
+          configMap:
+            name: practica3
+      containers:
+        - resources:
+            limits:
+              cpu: 200m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          name: practica3
+          ports:
+            - containerPort: 9092
+              protocol: TCP
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: properties
+              mountPath: /config
+          image: enriqueperezsopra/practica3:1.0.0
+      restartPolicy: Always

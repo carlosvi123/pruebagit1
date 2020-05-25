@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: practica3
+  namespace: formacion
+data:
+  application.properties: |-
+    server.port=9092
+    es.soprasteria.person.url=http://practica1:9090/api/v1/person/
+    es.soprasteria.skill.url=http://practica2:9091/v1/skill/

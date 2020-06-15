@@ -2,10 +2,14 @@ package es.soprasteria.formacion.rest;
 
 import es.soprasteria.formacion.dto.ProfileDto;
 import es.soprasteria.formacion.service.ProfileService;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.Gauge;
+import io.prometheus.client.Histogram;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -19,8 +23,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/v1/profile")
 public class ProfileController {
-  @Autowired
   private ProfileService profileService;
+  private MeterRegistry registry;
+  private CollectorRegistry collectorRegistry;
+  private Counter numRequest;
+  private Gauge gauge;
+  private Histogram histogram;
+
+  @Autowired
+  public ProfileController(ProfileService profileService, MeterRegistry registry, CollectorRegistry collectorRegistry) {
+    this.profileService = profileService;
+    this.registry = registry;
+    this.collectorRegistry = collectorRegistry;
+    this.numRequest = Counter.builder("practica3_nif_endpoint_num_request").description("Numero de peticiones").register(registry);
+    this.gauge = Gauge.build().name("practica3_nif_endpoint_concurrent_requests").help("Numero de peticiones concurrentes").register(collectorRegistry);
+    this.histogram = Histogram.build().name("practica3_nif_endpoint_execution_time").help("Tiempo de ejecucion").register(collectorRegistry);
+  }
 
   @ApiOperation(value="Recupera un perfil en función de su NIF")
   @ApiResponses(value = {
@@ -31,8 +49,16 @@ public class ProfileController {
       MediaType.APPLICATION_JSON_VALUE,
       MediaType.APPLICATION_XML_VALUE
   })
-  public ResponseEntity<ProfileDto> findProfile(@PathVariable(name="nif") String nif) {
+  public ResponseEntity<ProfileDto> findProfile(@PathVariable(name="nif") String nif) throws InterruptedException {
+    Histogram.Timer histogramTimer = this.histogram.startTimer();
+    this.numRequest.increment();
+
+    this.registry.counter("practica3_nif_endpoint_num_request_by_nif", "NIF", nif).increment();
+    this.gauge.inc();
     ProfileDto profile = profileService.getProfile(nif);
+    this.gauge.dec();
+    histogramTimer.observeDuration();
+
     if (profile == null) {
       return ResponseEntity.notFound().build();
     } else {

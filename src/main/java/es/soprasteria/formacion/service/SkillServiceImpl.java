@@ -22,8 +22,8 @@ public class SkillServiceImpl implements SkillService {
   private AmqpTemplate myRabbitTemplate;
 
   @Autowired
-  public SkillServiceImpl(AmqpTemplate myRabbitTemplate) {
-    this.restTemplate = new RestTemplate();
+  public SkillServiceImpl(AmqpTemplate myRabbitTemplate, RestTemplate restTemplate) {
+    this.restTemplate = restTemplate;
     this.myRabbitTemplate = myRabbitTemplate;
   }
 
@@ -34,6 +34,7 @@ public class SkillServiceImpl implements SkillService {
   })
   @Override
   public SkillDto getSkill(String nif) {
+    log.info("Getting skill from practica2. NIF: {}", nif);
     ResponseEntity<SkillDto> response = restTemplate.getForEntity(baseResource + nif, SkillDto.class);
     return response.getBody();
   }

@@ -57,6 +57,7 @@ public class ProfileController {
       MediaType.APPLICATION_XML_VALUE
   })
   public ResponseEntity<ProfileDto> findProfile(@PathVariable(name="nif") String nif) throws InterruptedException {
+    log.info("Find profile by nif '{}", nif);
     Histogram.Timer histogramTimer = this.histogram.startTimer();
     this.numRequest.increment();
 

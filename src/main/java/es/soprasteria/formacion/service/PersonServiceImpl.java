@@ -3,6 +3,7 @@ package es.soprasteria.formacion.service;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import es.soprasteria.formacion.dto.PersonDto;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -16,8 +17,9 @@ public class PersonServiceImpl implements PersonService {
 
   private RestTemplate restTemplate;
 
-  public PersonServiceImpl() {
-    this.restTemplate = new RestTemplate();
+  @Autowired
+  public PersonServiceImpl(RestTemplate restTemplate) {
+    this.restTemplate = restTemplate;
   }
 
   @HystrixCommand(fallbackMethod = "fallbackNif", commandProperties = {

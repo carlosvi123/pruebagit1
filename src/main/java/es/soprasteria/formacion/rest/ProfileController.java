@@ -1,6 +1,5 @@
 package es.soprasteria.formacion.rest;
 
-import es.soprasteria.formacion.dto.PersonDto;
 import es.soprasteria.formacion.dto.ProfileDto;
 import es.soprasteria.formacion.dto.SkillDto;
 import es.soprasteria.formacion.service.ProfileService;
@@ -17,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,6 +56,7 @@ public class ProfileController {
       MediaType.APPLICATION_JSON_VALUE,
       MediaType.APPLICATION_XML_VALUE
   })
+  @PreAuthorize("isAuthenticated()")
   public ResponseEntity<ProfileDto> findProfile(@PathVariable(name="nif") String nif) throws InterruptedException {
     log.info("Find profile by nif '{}", nif);
     Histogram.Timer histogramTimer = this.histogram.startTimer();
@@ -75,6 +76,7 @@ public class ProfileController {
   }
 
   @PostMapping("/skill")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
   public ResponseEntity<Boolean> createSkill(@RequestBody SkillDto newSkill) {
     Boolean result = skillService.createSkill(newSkill);
     if (result) {

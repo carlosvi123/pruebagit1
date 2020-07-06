@@ -55,9 +55,9 @@
       <artifactId>spring-cloud-starter-netflix-hystrix-dashboard</artifactId>
     </dependency>
     <dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-actuator</artifactId>
-  </dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
     <dependency>
       <groupId>io.micrometer</groupId>
       <artifactId>micrometer-registry-prometheus</artifactId>
@@ -70,6 +70,11 @@
     <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-starter-zipkin</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>de.siegmar</groupId>
+      <artifactId>logback-gelf</artifactId>
+      <version>3.0.0</version>
     </dependency>
 
     <dependency>
